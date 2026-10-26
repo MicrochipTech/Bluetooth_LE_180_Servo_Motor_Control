@@ -335,10 +335,10 @@ sequenceDiagram
     participant T as Released TRS
     participant A as Servo application
     participant P as PWM / servo
-    Note over M,T: Connected; Control Point notifications enabled
+    Note over M,T: Connected, Control Point notifications enabled
     M->>T: CP write: 8E 03 A2 00 5A
-    T->>A: Vendor-command event; full received frame
-    A->>A: Decode 0xA2; validate angle = 90
+    T->>A: Vendor-command event, full received frame
+    A->>A: Decode 0xA2, validate angle = 90
     A-->>M: CP ACK: 8E 01 D2 (through TRS)
     A->>P: pwm_set_dt: 20 ms period, 1.5 ms high
     A-->>M: CP response: 8E 03 B2 00 5A (through TRS)
