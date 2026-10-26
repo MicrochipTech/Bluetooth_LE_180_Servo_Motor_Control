@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="560" viewBox="0 0 1100 560" role="img" aria-labelledby="title desc">
+  <title id="title">180-degree servo: position encoded as pulse width</title>
+  <desc id="desc">Three pulses shown on a common 20 millisecond time scale. A 0.5 millisecond pulse commands 0 degrees at 2.5 percent duty, 1.5 milliseconds commands 90 degrees at 7.5 percent, and 2.5 milliseconds commands 180 degrees at 12.5 percent. The period remains 20 milliseconds, or 50 hertz.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1">
+      <stop stop-color="#101e38"/>
+      <stop offset="1" stop-color="#172b4b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1100" height="560" rx="24" fill="url(#bg)"/>
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <text x="40" y="46" fill="#67e8f9" font-size="14" font-weight="700" letter-spacing="3">BLUETOOTH LE + ZEPHYR</text>
+    <text x="40" y="93" fill="#f8fafc" font-size="34" font-weight="700">180-degree servo: command the position</text>
+    <text x="40" y="126" fill="#cbd5e1" font-size="18">The frequency stays fixed. Only the high pulse width changes.</text>
+    <rect x="40" y="150" width="1020" height="48" rx="12" fill="#233b5b"/>
+    <text x="61" y="180" fill="#f8fafc" font-size="17">20 ms period</text>
+    <text x="320" y="180" fill="#f8fafc" font-size="17">50 Hz frequency</text>
+    <text x="600" y="180" fill="#f8fafc" font-size="17">0.5-2.5 ms high time</text>
+    <text x="890" y="180" fill="#86efac" font-size="17">2.5-12.5% duty</text>
+    <g stroke="#39516d" stroke-dasharray="4 6">
+      <path d="M230 225V460 M430 225V460 M630 225V460 M830 225V460 M1030 225V460"/>
+    </g>
+    <g font-size="13" fill="#94a3b8">
+      <text x="222" y="487">0</text>
+      <text x="422" y="487">5</text>
+      <text x="619" y="487">10</text>
+      <text x="819" y="487">15</text>
+      <text x="1016" y="487">20 ms</text>
+    </g>
+    <g fill="#f8fafc" font-size="21" font-weight="700">
+      <text x="40" y="263">0 degrees</text>
+      <text x="40" y="348">90 degrees</text>
+      <text x="40" y="433">180 degrees</text>
+    </g>
+    <g fill="#cbd5e1" font-size="14">
+      <text x="40" y="286">0.5 ms / 2.5%</text>
+      <text x="40" y="371">1.5 ms / 7.5%</text>
+      <text x="40" y="456">2.5 ms / 12.5%</text>
+    </g>
+    <path d="M230 285V240H250V285H1030V240" fill="none" stroke="#38bdf8" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M230 370V325H290V370H1030V325" fill="none" stroke="#4ade80" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M230 455V410H330V455H1030V410" fill="none" stroke="#fbbf24" stroke-width="4" stroke-linejoin="round"/>
+    <g font-size="15" font-weight="600">
+      <text x="268" y="258" fill="#7dd3fc">Minimum command</text>
+      <text x="308" y="343" fill="#86efac">Center / startup</text>
+      <text x="348" y="428" fill="#fde68a">Maximum command</text>
+    </g>
+    <text x="40" y="531" fill="#cbd5e1" font-size="15">Commanded angle is not measured position. Confirm your servo supports the pulse range.</text>
+  </g>
+</svg>
