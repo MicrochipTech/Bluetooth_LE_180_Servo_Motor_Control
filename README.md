@@ -10,7 +10,13 @@ PIC32-BZ6 Curiosity &nbsp; | &nbsp; Bluetooth LE &nbsp; | &nbsp; 50 Hz PWM &nbsp
 
 </div>
 
-![180-degree servo PWM: a constant 20 ms period with 0.5, 1.5, and 2.5 ms pulses for the minimum, center, and maximum commanded positions.](docs/pwm-position.svg)
+![MBD slider commands any whole-degree angle from 0 to 180. Example PWM pulses shown for 0, 90, and 180 degrees. Tested with a Tower Pro MG996R 180-degree servo at 5 V.](docs/pwm-position.svg)
+
+> **Full-range position control:** Move the MBD slider to command **any whole-degree
+> angle from 0° to 180°**, not only the three illustrated positions. The **0°,
+> 90°, and 180°** preset buttons provide shortcuts.
+>
+> **Tested hardware:** Tower Pro **MG996R 180° positional servo**, operated at **5 V**.
 
 ## Disclaimer
 
@@ -89,7 +95,7 @@ flowchart LR
 | Item | Quantity | Notes |
 | :-- | :--: | :-- |
 | [PIC32-BZ6 Curiosity board](https://www.microchip.com/en-us/development-tool/ev31u42a) | 1 | Target: `pic32wm_bz6204_curiosity/pic32cx2051bz62132` |
-| Compatible 180° positional servo | 1 | Verify supply, signal-level, pulse-range, and current requirements |
+| Tower Pro MG996R 180° positional servo | 1 | Tested at **5 V**; verify the exact unit's supply, signal-level, pulse-range, and current requirements |
 | USB data cable | 1 | Board programming and serial connection |
 | Jumper wires | 3 | Signal, supply, and ground |
 | BLE-capable phone with MBD | 1 | A version supporting the servo command interface |

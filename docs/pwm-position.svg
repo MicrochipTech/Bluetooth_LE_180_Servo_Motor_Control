@@ -1,17 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="560" viewBox="0 0 1100 560" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="600" viewBox="0 0 1100 600" role="img" aria-labelledby="title desc">
   <title id="title">180-degree servo: position encoded as pulse width</title>
-  <desc id="desc">Three pulses shown on a common 20 millisecond time scale. A 0.5 millisecond pulse commands 0 degrees at 2.5 percent duty, 1.5 milliseconds commands 90 degrees at 7.5 percent, and 2.5 milliseconds commands 180 degrees at 12.5 percent. The period remains 20 milliseconds, or 50 hertz.</desc>
+  <desc id="desc">The MBD slider commands any whole-degree angle from 0 to 180, not just the three examples shown. Tested hardware: Tower Pro MG996R 180-degree positional variant, operated at 5 V. Three pulses shown on a common 20 millisecond time scale. A 0.5 millisecond pulse commands 0 degrees at 2.5 percent duty, 1.5 milliseconds commands 90 degrees at 7.5 percent, and 2.5 milliseconds commands 180 degrees at 12.5 percent. The period remains 20 milliseconds, or 50 hertz.</desc>
   <defs>
     <linearGradient id="bg" x2="1" y2="1">
       <stop stop-color="#101e38"/>
       <stop offset="1" stop-color="#172b4b"/>
     </linearGradient>
   </defs>
-  <rect width="1100" height="560" rx="24" fill="url(#bg)"/>
+  <rect width="1100" height="600" rx="24" fill="url(#bg)"/>
   <g font-family="Segoe UI, Arial, sans-serif">
     <text x="40" y="46" fill="#67e8f9" font-size="14" font-weight="700" letter-spacing="3">BLUETOOTH LE + ZEPHYR</text>
     <text x="40" y="93" fill="#f8fafc" font-size="34" font-weight="700">180-degree servo: command the position</text>
-    <text x="40" y="126" fill="#cbd5e1" font-size="18">The frequency stays fixed. Only the high pulse width changes.</text>
+    <text x="40" y="126" fill="#cbd5e1" font-size="18">MBD slider: any whole-degree angle from 0 to 180. Waveforms below are examples.</text>
     <rect x="40" y="150" width="1020" height="48" rx="12" fill="#233b5b"/>
     <text x="61" y="180" fill="#f8fafc" font-size="17">20 ms period</text>
     <text x="320" y="180" fill="#f8fafc" font-size="17">50 Hz frequency</text>
@@ -46,5 +46,6 @@
       <text x="348" y="428" fill="#fde68a">Maximum command</text>
     </g>
     <text x="40" y="531" fill="#cbd5e1" font-size="15">Commanded angle is not measured position. Confirm your servo supports the pulse range.</text>
+    <text x="40" y="575" fill="#67e8f9" font-size="17" font-weight="600">Tested servo: Tower Pro MG996R - 180-degree positional variant - operated at 5 V</text>
   </g>
 </svg>
