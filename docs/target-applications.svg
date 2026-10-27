@@ -1,11 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="910" viewBox="0 0 1200 910" role="img" aria-labelledby="title desc">
   <title id="title">Target applications for wireless 180-degree servo position control</title>
-  <desc id="desc">An MBD phone controls a wireless MCU and a positional servo. Three potential end products are a robotic gripper, a camera pan mount, and an adjustable air vent. The slider commands any whole-degree angle from 0 to 180. These are integration ideas, not validated complete products.</desc>
+  <desc id="desc">An MBD phone controls a wireless MCU and a positional servo. Six potential end products are a robotic gripper, camera pan mount, adjustable air vent, model vehicle steering, model railway turnout, and tabletop sorting gate. The slider commands any whole-degree angle from 0 to 180. These are integration ideas, not validated complete products.</desc>
   <defs>
     <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#0b162b"/><stop offset="1" stop-color="#173553"/></linearGradient>
     <linearGradient id="accent"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#4ade80"/></linearGradient>
   </defs>
-  <rect width="1200" height="650" rx="26" fill="url(#bg)"/>
+  <rect width="1200" height="910" rx="26" fill="url(#bg)"/>
   <circle cx="1130" cy="50" r="180" fill="#38bdf8" opacity=".04"/>
   <g font-family="Segoe UI, Arial, sans-serif">
     <text x="44" y="46" fill="#67e8f9" font-size="14" font-weight="700" letter-spacing="3">TARGET APPLICATIONS / POSITION CONTROL</text>
@@ -37,8 +37,22 @@
     <g fill="#b9cddd" font-size="16" text-anchor="middle">
       <text x="220" y="500">Set a jaw or linkage position</text><text x="600" y="500">Adjust the viewing direction</text><text x="980" y="500">Set the louver opening</text>
     </g>
-    <rect x="44" y="553" width="1112" height="46" rx="12" fill="#244761"/>
-    <text x="600" y="583" fill="#86efac" font-size="20" font-weight="700" text-anchor="middle">ANY WHOLE-DEGREE ANGLE 0-180  |  PRESETS 0 / 90 / 180  |  50 Hz PWM</text>
-    <text x="44" y="629" fill="#a6bdce" font-size="14">Potential integrations only. Mechanics, power, calibration and safety controls must be designed for the end product.</text>
+    <g fill="#132a43" stroke="#31516d">
+      <rect x="44" y="556" width="352" height="232" rx="18"/><rect x="424" y="556" width="352" height="232" rx="18"/><rect x="804" y="556" width="352" height="232" rx="18"/>
+    </g>
+    <g fill="none" stroke="#67e8f9" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="220" cy="642" r="43"/><path d="M179 642H261M220 642V683M208 616L220 604L232 616"/>
+      <path d="M538 606V687M558 606V687M638 606L558 687M660 606L580 687M538 623H558M538 666H558M611 637L630 653"/>
+      <path d="M913 609H1047V682H913ZM980 610V681M980 646L1020 621M930 627H947M930 646H947M930 665H947"/>
+    </g>
+    <g fill="#f8fafc" font-size="23" font-weight="700" text-anchor="middle">
+      <text x="220" y="725">Model vehicle steering</text><text x="600" y="725">Model railway turnout</text><text x="980" y="725">Tabletop sorting gate</text>
+    </g>
+    <g fill="#b9cddd" font-size="16" text-anchor="middle">
+      <text x="220" y="756">Set a steering linkage angle</text><text x="600" y="756">Position a track-switch linkage</text><text x="980" y="756">Direct items with a diverter flap</text>
+    </g>
+    <rect x="44" y="813" width="1112" height="46" rx="12" fill="#244761"/>
+    <text x="600" y="843" fill="#86efac" font-size="20" font-weight="700" text-anchor="middle">ANY WHOLE-DEGREE ANGLE 0-180  |  PRESETS 0 / 90 / 180  |  50 Hz PWM</text>
+    <text x="44" y="889" fill="#a6bdce" font-size="14">Potential integrations only. Mechanics, power, calibration and safety controls must be designed for the end product.</text>
   </g>
 </svg>

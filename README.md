@@ -1,3 +1,5 @@
+<img align="right" width="96" src="https://raw.githubusercontent.com/MicrochipTech/PIC32BZ6_Bluetooth_LE_Servo_Motor_Control/main/docs/IoT-Made-Easy-Logo.png" alt="IoT Made Easy logo">
+
 <div align="center">
 
 # Bluetooth LE 180° Servo Motor Control
@@ -6,19 +8,44 @@
 
 Wireless MCU &nbsp; | &nbsp; Bluetooth LE &nbsp; | &nbsp; 50 Hz PWM &nbsp; | &nbsp; 0–180°
 
-[Set up Zephyr](#2-zephyr-setup-prerequisites) · [Import](#3-import-the-application) · [Build](#7-build-the-application) · [Flash](#8-program-the-board) · [Run with MBD](#9-run-the-demo-with-mbd)
+[Set up Zephyr](#41-prerequisites) · [Import](#42-import-the-application) · [Build](#44-build-the-application) · [Flash](#45-program-the-board) · [Run with MBD](#6-demo-setup-and-operation)
 
 </div>
 
-![Target applications: wireless position control for a robotic gripper, camera pan mount, or adjustable air vent. MBD commands a wireless MCU and servo through a generic PWM pin.](docs/target-applications.svg)
+**Contents**
+
+1. [Introduction](#1-introduction)
+2. [Target Segments and Applications](#2-target-segments-and-applications)
+3. [Hardware Setup](#3-hardware-setup)
+4. [Zephyr Software Setup](#4-zephyr-software-setup)
+   - [Prerequisites](#41-prerequisites)
+   - [Import the application](#42-import-the-application)
+   - [Application configuration](#43-application-configuration)
+   - [Build](#44-build-the-application)
+   - [Program](#45-program-the-board)
+   - [File structure](#46-file-structure)
+5. [Application Architecture and Control Principles](#5-application-architecture-and-control-principles)
+   - [Control architecture](#51-control-architecture)
+   - [BLE data flow and commands](#52-ble-data-flow-and-commands)
+   - [PWM and motor control](#53-pwm-and-motor-control)
+6. [Demo Setup and Operation](#6-demo-setup-and-operation)
+7. [Validation and Troubleshooting](#7-validation-and-troubleshooting)
+
+
+## 1. Introduction
+
+Move a compatible **180° positional servo** wirelessly from the Microchip
+Bluetooth Data (MBD) app. The board translates a BLE position command into a
+hardware-generated PWM pulse. Change the position continuously with a slider or
+select the fixed **0°, 90°, and 180°** commands.
 
 > **Full-range position control:** Move the MBD slider to command **any whole-degree
-> angle from 0° to 180°**, not only the three illustrated positions. The **0°,
+> angle from 0° to 180°**, not only the three preset positions. The **0°,
 > 90°, and 180°** preset buttons provide shortcuts.
 >
 > **Tested hardware:** Tower Pro **MG996R 180° positional servo**, operated at **5 V**.
 
-## Disclaimer
+### Disclaimer
 
 This example is provided **“AS IS”** as a starting point for development and
 self-support. Verify the servo's electrical ratings and mechanical travel before
@@ -27,27 +54,9 @@ use. Firmware position values are commands, not measured shaft angles.
 [Microchip technical support](https://www.microchip.com/en-us/support) ·
 [Companion 360° application](https://github.com/MicrochipTech/Bluetooth_LE_360_Servo_Motor_Control)
 
-## Contents
+## 2. Target Segments and Applications
 
-1. [Introduction and target applications](#1-introduction-and-target-applications)
-2. [Zephyr setup prerequisites](#2-zephyr-setup-prerequisites)
-3. [Import the application](#3-import-the-application)
-4. [Hardware setup](#4-hardware-setup)
-5. [Zephyr application configuration](#5-zephyr-application-configuration)
-6. [How PWM controls position](#6-how-pwm-controls-position)
-7. [Build the application](#7-build-the-application)
-8. [Program the board](#8-program-the-board)
-9. [Run the demo with MBD](#9-run-the-demo-with-mbd)
-10. [BLE commands and data flow](#10-ble-commands-and-data-flow)
-11. [Validation and troubleshooting](#11-validation-and-troubleshooting)
-12. [Project map and references](#12-project-map-and-references)
-
-## 1. Introduction and target applications
-
-Move a compatible **180° positional servo** wirelessly from the Microchip
-Bluetooth Data (MBD) app. The board translates a BLE position command into a
-hardware-generated PWM pulse. Change the position continuously with a slider or
-select the fixed **0°, 90°, and 180°** commands.
+![Six target applications: robotic gripper, camera pan mount, adjustable air vent, model vehicle steering, model railway turnout, and tabletop sorting gate. MBD commands a wireless MCU and positional servo through a generic PWM pin.](docs/target-applications.svg)
 
 ### Potential end products
 
@@ -56,68 +65,21 @@ select the fixed **0°, 90°, and 180°** commands.
 | Robotic gripper | Adjust a jaw or linkage to a commanded position |
 | Camera pan mount | Change viewing direction within the mechanical travel |
 | Adjustable air vent | Set a louver opening from a phone |
+| Model vehicle steering | Set a steering linkage angle |
+| Model railway turnout | Position a track-switch linkage |
+| Tabletop sorting gate | Direct small items with a diverter flap |
 
 These are **integration ideas**, not validated complete products. The demo
 controls one servo; product mechanics, calibration, power, and safety controls
 must be designed separately.
 
-> [!IMPORTANT]
+> 📌 **Important**
+>
 > A continuous-rotation servo is not a substitute for a positional servo. Use the
 > [360° application](https://github.com/MicrochipTech/Bluetooth_LE_360_Servo_Motor_Control)
 > for speed, direction, and start/stop control.
 
-## 2. Zephyr setup prerequisites
-
-Complete the [Zephyr Wireless environment setup](https://github.com/Zephyr4Microchip/zephyr-wireless#2-environment-setup)
-using either of the two supported workflows:
-
-- **Workbench (VS Code):** Follow the [Workbench for Zephyr guide](https://github.com/Zephyr4Microchip/zephyr-wireless/blob/main/docs/Workbench_for_Zephyr.md).
-- **Command line (CLI):** Follow the [command-line setup instructions](https://github.com/Zephyr4Microchip/zephyr-wireless#legacy-command-line).
-
-Use those guides for host tools, workspace and SDK installation, Microchip
-libraries, OpenOCD, and programmer-mode setup. Use the TRP revision listed in
-[application configuration](#5-zephyr-application-configuration) and SDK **0.17.4**
-for this application.
-
-**Supported board:** PIC32-BZ6 Curiosity only — **`pic32wm_bz6204_curiosity`**.
-
-## 3. Import the application
-
-### Clone into the workspace
-
-From an **initialized workspace using the pinned Zephyr checkout**, synchronize
-the dependencies and obtain the required Microchip blobs:
-
-```powershell
-west update
-west blobs fetch hal_microchip
-git clone https://github.com/MicrochipTech/Bluetooth_LE_180_Servo_Motor_Control.git applications\Bluetooth_LE_180_Servo_Motor_Control
-```
-
-Run these commands in the intended workspace, not an unrelated shared workspace.
-Its manifest must refer to the pinned release. The application repository alone
-does not contain Zephyr, its modules, or the toolchain.
-
-> [!TIP]
-> The branch name alone is not enough: an older local checkout of the same branch
-> may not contain the released TRS subsystem. Check the commit and ensure your
-> build selects that checkout if multiple Zephyr packages are installed.
-
-### Workbench
-
-Follow [Import existing application in Workbench](https://github.com/Zephyr4Microchip/zephyr-wireless/blob/main/docs/Workbench_for_Zephyr.md#7-import-existing-application).
-Select the cloned `applications\Bluetooth_LE_180_Servo_Motor_Control` folder.
-Choose board **`pic32wm_bz6204_curiosity`**, SoC qualifier
-**`pic32cx2051bz62132`** if requested, and SDK **0.17.4**.
-
-### CLI
-
-No IDE import is required. After cloning, use the application path as the source
-argument to `west build` in [Build the application](#7-build-the-application).
-See the [Zephyr Wireless CLI workflow](https://github.com/Zephyr4Microchip/zephyr-wireless#legacy-command-line)
-for workspace and shell setup.
-
-## 4. Hardware setup
+## 3. Hardware Setup
 
 ### Bill of materials
 
@@ -161,7 +123,8 @@ flowchart LR
     style G fill:#e2e8f0,stroke:#475569,color:#0f172a
 ```
 
-> [!WARNING]
+> ⚠️ **Warning**
+>
 > Check the board and servo current ratings, including servo stall current. Do
 > not assume the board's 5 V header can supply every servo. If an external supply
 > is required, connect its ground to board ground and avoid tying its output to
@@ -173,7 +136,73 @@ wire colors are not a reliable specification. Allow clearance for the startup
 move to the center position. Hardware photos can be added alongside these diagrams
 without changing the documented pin mapping.
 
-## 5. Zephyr application configuration
+## 4. Zephyr Software Setup
+
+### 4.1 Prerequisites
+
+Complete the [Zephyr Wireless environment setup](https://github.com/Zephyr4Microchip/zephyr-wireless#2-environment-setup)
+using either of the two supported workflows:
+
+- **Workbench (VS Code):** Follow the [Workbench for Zephyr guide](https://github.com/Zephyr4Microchip/zephyr-wireless/blob/main/docs/Workbench_for_Zephyr.md).
+- **Command line (CLI):** Follow the [command-line setup instructions](https://github.com/Zephyr4Microchip/zephyr-wireless#legacy-command-line).
+
+Use those guides for host tools, workspace and SDK installation, Microchip
+libraries, OpenOCD, and programmer-mode setup. Use the TRP revision listed in
+[application configuration](#43-application-configuration) and SDK **0.17.4**
+for this application.
+
+**Supported board:** PIC32-BZ6 Curiosity only — **`pic32wm_bz6204_curiosity`**.
+
+#### Setup guide and supporting references
+
+Complete the environment setup before importing the application. The TRP,
+PWM, and testing links below are supporting references, not extra installation
+steps.
+
+- [Microchip Workbench for Zephyr guide](https://github.com/Zephyr4Microchip/zephyr-wireless/blob/main/docs/Workbench_for_Zephyr.md) — setup, CMSIS-DAP switching, import, build, and flash.
+- [Released Transparent UART sample](https://github.com/Zephyr4Microchip/zephyr/tree/bb83b6cd729c963eb5fee17caa26ef33aba5332a/samples/bluetooth/peripheral_trp_uart) — TRP application baseline.
+- [Released TRS subsystem](https://github.com/Zephyr4Microchip/zephyr/tree/bb83b6cd729c963eb5fee17caa26ef33aba5332a/subsys/bluetooth/services/trs) — BLE service and server implementation.
+- [Zephyr PWM API](https://docs.zephyrproject.org/4.2.0/hardware/peripherals/pwm.html) — pulse-generation API used by the servo application.
+- [Microchip Transparent UART testing guide](https://onlinedocs.microchip.com/oxy/GUID-A5330D3A-9F51-4A26-B71D-8503A493DF9C-en-US-11/GUID-07EC83B7-CC28-4C55-8634-4B7F56A9DB36.html) — transport testing reference.
+
+### 4.2 Import the application
+
+#### Clone into the workspace
+
+From an **initialized workspace using the pinned Zephyr checkout**, synchronize
+the dependencies and obtain the required Microchip blobs:
+
+```powershell
+west update
+west blobs fetch hal_microchip
+git clone https://github.com/MicrochipTech/Bluetooth_LE_180_Servo_Motor_Control.git applications\Bluetooth_LE_180_Servo_Motor_Control
+```
+
+Run these commands in the intended workspace, not an unrelated shared workspace.
+Its manifest must refer to the pinned release. The application repository alone
+does not contain Zephyr, its modules, or the toolchain.
+
+> 💡 **Tip**
+>
+> The branch name alone is not enough: an older local checkout of the same branch
+> may not contain the released TRS subsystem. Check the commit and ensure your
+> build selects that checkout if multiple Zephyr packages are installed.
+
+#### Workbench
+
+Follow [Import existing application in Workbench](https://github.com/Zephyr4Microchip/zephyr-wireless/blob/main/docs/Workbench_for_Zephyr.md#7-import-existing-application).
+Select the cloned `applications\Bluetooth_LE_180_Servo_Motor_Control` folder.
+Choose board **`pic32wm_bz6204_curiosity`**, SoC qualifier
+**`pic32cx2051bz62132`** if requested, and SDK **0.17.4**.
+
+#### CLI
+
+No IDE import is required. After cloning, use the application path as the source
+argument to `west build` in [Build the application](#44-build-the-application).
+See the [Zephyr Wireless CLI workflow](https://github.com/Zephyr4Microchip/zephyr-wireless#legacy-command-line)
+for workspace and shell setup.
+
+### 4.3 Application configuration
 
 This application builds on the **Microchip Transparent Profile (TRP)** available
 through [Zephyr Wireless](https://github.com/Zephyr4Microchip/zephyr-wireless),
@@ -190,6 +219,96 @@ command interface and PWM position control**.
 The TRP revision used here is a branch commit, not a tagged release. The older
 `pic32cxbz_v420_v1.2.0` tag does not include this TRP implementation; use the
 revision above to reproduce this application.
+
+Zephyr uses Kconfig for features, devicetree for routing, and its PWM API for
+pulse updates.
+
+| Layer | Configuration / source | Role |
+| :-- | :-- | :-- |
+| BLE + released TRS | [prj.conf](prj.conf) | Enables Bluetooth peripheral, TRS service/server, dynamic GATT, and buffers |
+| Servo type | [Kconfig](Kconfig) | Selects the 180° application |
+| PWM route | [BZ6 board overlay](boards/pic32wm_bz6204_curiosity.overlay) | `pwm-servo` alias, TCC1 channel 1, PC11, 20,000,000 ns period |
+| Command integration | [main.c](src/main.c) | Advertising, TRS event dispatch, UART bridge, and servo command forwarding |
+| Position-to-pulse mapping | [Servo implementation](src/app_servo_motor_180.c) | Range validation, ACKs/responses, and `pwm_set_dt()` |
+| Command definitions | [Servo header](src/app_servo_motor_180.h) | Opcodes, request/response IDs, and preset values |
+
+```ini
+CONFIG_BT_TRS=y
+CONFIG_BT_TRS_SERVER=y
+CONFIG_BT_GATT_DYNAMIC_DB=y
+CONFIG_GPIO=y
+CONFIG_PWM=y
+```
+
+BLE is configured for one connection, a target ATT MTU of 247, and
+16 TRS receive buffers of 244 bytes. The actual MTU is negotiated with the phone.
+Persistent bond storage is not enabled.
+
+### 4.4 Build the application
+
+#### Workbench
+
+Follow [Build the application in Workbench](https://github.com/Zephyr4Microchip/zephyr-wireless/blob/main/docs/Workbench_for_Zephyr.md#step8)
+using the board and SDK selected during import. Select the pinned Zephyr
+checkout documented in [Application configuration](#43-application-configuration).
+
+#### CLI
+
+Refer to [Zephyr Wireless — Building sample applications](https://github.com/Zephyr4Microchip/zephyr-wireless#3-building-sample-applications).
+For this repository, use the following board and source path.
+
+From the workspace root with the pinned checkout selected:
+
+```powershell
+west build -b pic32wm_bz6204_curiosity/pic32cx2051bz62132 -d applications\Bluetooth_LE_180_Servo_Motor_Control\build\released applications\Bluetooth_LE_180_Servo_Motor_Control
+```
+
+Builds are generated locally under `build/`, which is ignored by Git. No
+precompiled image is required from this repository. When switching Zephyr
+revisions, use a new build directory or a pristine build; do not flash a stale
+image from an earlier configuration.
+
+### 4.5 Program the board
+
+#### Workbench
+
+Follow [Flash the application in Workbench](https://github.com/Zephyr4Microchip/zephyr-wireless/blob/main/docs/Workbench_for_Zephyr.md#step9)
+and select the **`openocd`** runner. OpenOCD installation and CMSIS-DAP
+programmer-mode switching are covered in the
+[setup prerequisite](#41-prerequisites), not repeated here.
+
+#### CLI
+
+Refer to [West flashing and debugging](https://docs.zephyrproject.org/4.2.0/develop/west/build-flash-debug.html#flashing-west-flash).
+Flash the build directory produced in the previous section:
+
+```powershell
+west flash -d applications\Bluetooth_LE_180_Servo_Motor_Control\build\released --runner openocd
+```
+
+### 4.6 File structure
+
+```text
+Bluetooth_LE_180_Servo_Motor_Control/
+|-- README.md
+|-- CMakeLists.txt
+|-- Kconfig
+|-- prj.conf
+|-- sample.yaml
+|-- boards/
+|   `-- pic32wm_bz6204_curiosity.overlay
+|-- docs/
+|   |-- target-applications.svg
+|   `-- pwm-position.svg
+`-- src/
+    |-- main.c
+    |-- app_servo_motor_180.c
+    `-- app_servo_motor_180.h
+```
+
+## 5. Application Architecture and Control Principles
+
+### 5.1 Control architecture
 
 | At a glance | Application behavior |
 | :-- | :-- |
@@ -223,136 +342,9 @@ flowchart TB
 Diagrams show generic functional connections. The hardware table and overlay
 define the actual BZ6 pin mapping; no other board is currently supported.
 
-Zephyr uses Kconfig for features, devicetree for routing, and its PWM API for
-pulse updates.
+### 5.2 BLE data flow and commands
 
-| Layer | Configuration / source | Role |
-| :-- | :-- | :-- |
-| BLE + released TRS | [prj.conf](prj.conf) | Enables Bluetooth peripheral, TRS service/server, dynamic GATT, and buffers |
-| Servo type | [Kconfig](Kconfig) | Selects the 180° application |
-| PWM route | [BZ6 board overlay](boards/pic32wm_bz6204_curiosity.overlay) | `pwm-servo` alias, TCC1 channel 1, PC11, 20,000,000 ns period |
-| Command integration | [main.c](src/main.c) | Advertising, TRS event dispatch, UART bridge, and servo command forwarding |
-| Position-to-pulse mapping | [Servo implementation](src/app_servo_motor_180.c) | Range validation, ACKs/responses, and `pwm_set_dt()` |
-| Command definitions | [Servo header](src/app_servo_motor_180.h) | Opcodes, request/response IDs, and preset values |
-
-```ini
-CONFIG_BT_TRS=y
-CONFIG_BT_TRS_SERVER=y
-CONFIG_BT_GATT_DYNAMIC_DB=y
-CONFIG_GPIO=y
-CONFIG_PWM=y
-```
-
-BLE is configured for one connection, a target ATT MTU of 247, and
-16 TRS receive buffers of 244 bytes. The actual MTU is negotiated with the phone.
-Persistent bond storage is not enabled.
-
-## 6. How PWM controls position
-
-![MBD slider commands any whole-degree angle from 0 to 180. PWM examples show 0, 90, and 180 degrees at a fixed 20 ms period.](docs/pwm-position.svg)
-
-### Fixed frequency, variable high time
-
-The timer repeats a pulse every **20 ms**, so:
-
-```text
-Frequency = 1 / 0.020 s = 50 Hz
-Duty cycle (%) = high pulse width / 20 ms × 100
-```
-
-The app sends an **angle**, not a duty-cycle percentage. Firmware converts that
-angle to a pulse width and calls `pwm_set_dt()` with a fixed period.
-
-```text
-Commanded angle θ: 0 to 180
-Pulse width (ns) = 500,000 + floor(θ × 2,000,000 / 180)
-Pulse width (ms) ≈ 0.5 + θ / 90
-Duty cycle (%) ≈ 2.5 + θ / 18
-```
-
-| Position command | High pulse | Duty cycle at 50 Hz | Use |
-| --: | --: | --: | :-- |
-| **0°** | **0.50 ms** | **2.50%** | Minimum command / fixed preset |
-| 45° | 1.00 ms | 5.00% | Intermediate position |
-| **90°** | **1.50 ms** | **7.50%** | Startup / center preset |
-| 135° | 2.00 ms | 10.00% | Intermediate position |
-| **180°** | **2.50 ms** | **12.50%** | Maximum command / fixed preset |
-
-> [!IMPORTANT]
-> **A 50 Hz PWM signal does not mean 50% duty cycle.** This application uses
-> 2.5–12.5% duty cycle. Servo position is encoded by pulse width. Actual travel
-> depends on the servo; confirm that 0.5–2.5 ms is supported before using the
-> endpoints. Software does not measure the shaft position.
-
-## 7. Build the application
-
-### Workbench
-
-Follow [Build the application in Workbench](https://github.com/Zephyr4Microchip/zephyr-wireless/blob/main/docs/Workbench_for_Zephyr.md#step8)
-using the board and SDK selected during import. Select the pinned Zephyr
-checkout documented in [Application configuration](#5-zephyr-application-configuration).
-
-### CLI
-
-Refer to [Zephyr Wireless — Building sample applications](https://github.com/Zephyr4Microchip/zephyr-wireless#3-building-sample-applications).
-For this repository, use the following board and source path.
-
-From the workspace root with the pinned checkout selected:
-
-```powershell
-west build -b pic32wm_bz6204_curiosity/pic32cx2051bz62132 -d applications\Bluetooth_LE_180_Servo_Motor_Control\build\released applications\Bluetooth_LE_180_Servo_Motor_Control
-```
-
-Builds are generated locally under `build/`, which is ignored by Git. No
-precompiled image is required from this repository. When switching Zephyr
-revisions, use a new build directory or a pristine build; do not flash a stale
-image from an earlier configuration.
-
-## 8. Program the board
-
-### Workbench
-
-Follow [Flash the application in Workbench](https://github.com/Zephyr4Microchip/zephyr-wireless/blob/main/docs/Workbench_for_Zephyr.md#step9)
-and select the **`openocd`** runner. OpenOCD installation and CMSIS-DAP
-programmer-mode switching are covered in the
-[setup prerequisite](#2-zephyr-setup-prerequisites), not repeated here.
-
-### CLI
-
-Refer to [West flashing and debugging](https://docs.zephyrproject.org/4.2.0/develop/west/build-flash-debug.html#flashing-west-flash).
-Flash the build directory produced in the previous section:
-
-```powershell
-west flash -d applications\Bluetooth_LE_180_Servo_Motor_Control\build\released --runner openocd
-```
-
-## 9. Run the demo with MBD
-
-The table describes the firmware-facing workflow. Exact MBD menu names and
-screenshots depend on the app version and can be added with the demo images.
-
-| Step | Action in the setup / MBD app | Expected firmware behavior |
-| :--: | :-- | :-- |
-| 1 | Power and reset the programmed board | Servo receives the 90° / 1.5 ms startup command |
-| 2 | Open MBD, scan, and connect to **`Zephyr_Servo-180`** | Board establishes one BLE connection |
-| 3 | Open the servo controls in a compatible MBD version | UI-update exchange identifies `SERVO 180`, type `0x00`, and current software state |
-| 4 | Ensure Control Point notifications are enabled; a compatible app may manage this automatically | ACKs and servo responses can reach the phone |
-| 5 | Adjust the position slider within **0–180** | Firmware maps the angle to a 0.5–2.5 ms pulse |
-| 6 | Select **0°, 90°, or 180°** | Firmware updates position and returns state information |
-| 7 | Observe the servo and compare with serial logs if needed | Commanded position and pulse width are logged |
-
-For a manual BLE client, enable Control Point notifications **before** sending
-commands. Use hexadecimal byte writes, not ASCII text. The UI-update request is
-`8E 01 A1`; a 90° slider request is `8E 03 A2 00 5A`.
-
-> [!NOTE]
-> A generic UART text terminal is not the MBD servo interface. Writing to the TRS
-> RX data characteristic forwards bytes to UART; it does **not** execute a servo
-> command. Servo commands belong on the **Control Point** characteristic.
-
-## 10. BLE commands and data flow
-
-### From a slider action to the PWM pin
+#### From a slider action to the PWM pin
 
 ```mermaid
 sequenceDiagram
@@ -374,7 +366,7 @@ ACK means the request reached the application path; it is **not** physical
 position feedback or proof that the PWM hardware succeeded. Check errors and the
 actual servo movement during validation.
 
-### Transport channels
+#### Transport channels
 
 | Characteristic | Phone action | Board action |
 | :-- | :-- | :-- |
@@ -397,7 +389,7 @@ Discover characteristics by UUID rather than relying on fixed ATT handles.
 
 </details>
 
-### Servo packet format
+#### Servo packet format
 
 All examples below are **hexadecimal bytes on the BLE Control Point**:
 
@@ -445,7 +437,7 @@ necessarily update it.
 
 </details>
 
-### Optional UART bridge
+#### Optional UART bridge
 
 | Input / condition | Behavior |
 | :-- | :-- |
@@ -456,7 +448,72 @@ necessarily update it.
 | UART-to-BLE payload size | Up to `ATT MTU - 4`: 19 bytes at MTU 23; 243 bytes at MTU 247 |
 | Temporary TX backpressure | Pending UART data retried; TX-open and CBFC-credit events restart the pump |
 
-## 11. Validation and troubleshooting
+### 5.3 PWM and motor control
+
+#### How PWM controls position
+
+![MBD slider commands any whole-degree angle from 0 to 180. PWM examples show 0, 90, and 180 degrees at a fixed 20 ms period.](docs/pwm-position.svg)
+
+##### Fixed frequency, variable high time
+
+The timer repeats a pulse every **20 ms**, so:
+
+```text
+Frequency = 1 / 0.020 s = 50 Hz
+Duty cycle (%) = high pulse width / 20 ms × 100
+```
+
+The app sends an **angle**, not a duty-cycle percentage. Firmware converts that
+angle to a pulse width and calls `pwm_set_dt()` with a fixed period.
+
+```text
+Commanded angle θ: 0 to 180
+Pulse width (ns) = 500,000 + floor(θ × 2,000,000 / 180)
+Pulse width (ms) ≈ 0.5 + θ / 90
+Duty cycle (%) ≈ 2.5 + θ / 18
+```
+
+| Position command | High pulse | Duty cycle at 50 Hz | Use |
+| --: | --: | --: | :-- |
+| **0°** | **0.50 ms** | **2.50%** | Minimum command / fixed preset |
+| 45° | 1.00 ms | 5.00% | Intermediate position |
+| **90°** | **1.50 ms** | **7.50%** | Startup / center preset |
+| 135° | 2.00 ms | 10.00% | Intermediate position |
+| **180°** | **2.50 ms** | **12.50%** | Maximum command / fixed preset |
+
+> 📌 **Important**
+>
+> **A 50 Hz PWM signal does not mean 50% duty cycle.** This application uses
+> 2.5–12.5% duty cycle. Servo position is encoded by pulse width. Actual travel
+> depends on the servo; confirm that 0.5–2.5 ms is supported before using the
+> endpoints. Software does not measure the shaft position.
+
+## 6. Demo Setup and Operation
+
+The table describes the firmware-facing workflow. Exact MBD menu names and
+screenshots depend on the app version and can be added with the demo images.
+
+| Step | Action in the setup / MBD app | Expected firmware behavior |
+| :--: | :-- | :-- |
+| 1 | Power and reset the programmed board | Servo receives the 90° / 1.5 ms startup command |
+| 2 | Open MBD, scan, and connect to **`Zephyr_Servo-180`** | Board establishes one BLE connection |
+| 3 | Open the servo controls in a compatible MBD version | UI-update exchange identifies `SERVO 180`, type `0x00`, and current software state |
+| 4 | Ensure Control Point notifications are enabled; a compatible app may manage this automatically | ACKs and servo responses can reach the phone |
+| 5 | Adjust the position slider within **0–180** | Firmware maps the angle to a 0.5–2.5 ms pulse |
+| 6 | Select **0°, 90°, or 180°** | Firmware updates position and returns state information |
+| 7 | Observe the servo and compare with serial logs if needed | Commanded position and pulse width are logged |
+
+For a manual BLE client, enable Control Point notifications **before** sending
+commands. Use hexadecimal byte writes, not ASCII text. The UI-update request is
+`8E 01 A1`; a 90° slider request is `8E 03 A2 00 5A`.
+
+> ℹ️ **Note**
+>
+> A generic UART text terminal is not the MBD servo interface. Writing to the TRS
+> RX data characteristic forwards bytes to UART; it does **not** execute a servo
+> command. Servo commands belong on the **Control Point** characteristic.
+
+## 7. Validation and Troubleshooting
 
 **The migrated application has been built, flashed, and reported working on
 PIC32-BZ6 hardware.** This is a functional result, not a claim that every stress
@@ -481,34 +538,7 @@ or boundary case below has been tested.
 | Servo strains at an endpoint | Disconnect power and verify its safe travel/pulse limits |
 | Missing UART data | Delimiters, connection/subscription state, queue-overflow logs, and flow control |
 
-> [!WARNING]
+> ⚠️ **Warning**
+>
 > Disconnecting BLE does not disable PWM or recenter the servo. The last pulse
 > command remains active. Do not treat radio disconnection as a hardware stop.
-
-## 12. Project map and references
-
-```text
-Bluetooth_LE_180_Servo_Motor_Control/
-|-- README.md
-|-- CMakeLists.txt
-|-- Kconfig
-|-- prj.conf
-|-- sample.yaml
-|-- boards/
-|   `-- pic32wm_bz6204_curiosity.overlay
-|-- docs/
-|   |-- target-applications.svg
-|   `-- pwm-position.svg
-`-- src/
-    |-- main.c
-    |-- app_servo_motor_180.c
-    `-- app_servo_motor_180.h
-```
-
-This application supports only the PIC32-BZ6 Curiosity board.
-
-- [Released Transparent UART sample](https://github.com/Zephyr4Microchip/zephyr/tree/bb83b6cd729c963eb5fee17caa26ef33aba5332a/samples/bluetooth/peripheral_trp_uart)
-- [Microchip Workbench for Zephyr guide](https://github.com/Zephyr4Microchip/zephyr-wireless/blob/main/docs/Workbench_for_Zephyr.md) — setup, CMSIS-DAP switching, import, build, and flash.
-- [Released TRS subsystem](https://github.com/Zephyr4Microchip/zephyr/tree/bb83b6cd729c963eb5fee17caa26ef33aba5332a/subsys/bluetooth/services/trs)
-- [Zephyr PWM API](https://docs.zephyrproject.org/4.2.0/hardware/peripherals/pwm.html)
-- [Microchip Transparent UART testing guide](https://onlinedocs.microchip.com/oxy/GUID-A5330D3A-9F51-4A26-B71D-8503A493DF9C-en-US-11/GUID-07EC83B7-CC28-4C55-8634-4B7F56A9DB36.html)
