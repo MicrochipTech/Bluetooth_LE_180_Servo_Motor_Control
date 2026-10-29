@@ -315,13 +315,13 @@ sequenceDiagram
     participant A as Servo application
     participant P as PWM / servo
     Note over M,T: Connected, Control Point notifications enabled
-    M->>T: CP write: 8E 03 A2 00 5A
+    M->>T: Slider Set: 90°
     T->>A: Vendor-command event, full received frame
-    A->>A: Decode 0xA2, validate angle = 90
-    A-->>M: CP ACK: 8E 01 D2 (through TRS)
+    A->>A: Validate slider angle = 90°
+    A-->>M: Control Response: Slider Set accepted (through TRS)
     A->>P: pwm_set_dt: 20 ms period, 1.5 ms high
-    A-->>M: CP response: 8E 03 B2 00 5A (through TRS)
-    A-->>M: Preset notification: 8E 02 C3 5A (through TRS)
+    A-->>M: Slider Set Response: 90° (through TRS)
+    A-->>M: Fixed Position Notify: 90° (through TRS)
 ```
 
 ACK means the request reached the application path; it is **not** physical
