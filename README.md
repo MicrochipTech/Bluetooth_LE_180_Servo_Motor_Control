@@ -279,16 +279,15 @@ Bluetooth_LE_180_Servo_Motor_Control/
 | Feedback | Command ACKs and software-state responses; no external position sensor |
 
 ```mermaid
-flowchart TB
-    A["MBD app<br/>Position slider / presets"]
-    subgraph BOARD["Wireless MCU · Zephyr"]
+flowchart LR
+    A["MBD app<br/>Position slider<br/>Presets"]
+    subgraph BOARD["Wireless MCU"]
         direction TB
-        B["Transparent UART service + server"] --> C["Servo command<br/>validation + mapping"]
+        B["Transparent UART"] <--> C["Servo command<br/>validation + mapping"]
         C --> D["PWM output<br/>50 Hz"]
     end
-    A -->|"Bluetooth LE command"| B
-    C -.->|"ACK + state"| A
-    D -->|"PWM pin"| E["180° positional servo"]
+    A <-->|"BLE command / ACK + state"| B
+    D -->|"PWM pin"| E["180° positional<br/>servo"]
     style A fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
     style B fill:#eef2ff,stroke:#6366f1,color:#312e81
     style C fill:#eef2ff,stroke:#6366f1,color:#312e81
@@ -306,9 +305,11 @@ define the actual BZ6 pin mapping; no other board is currently supported.
 ```mermaid
 sequenceDiagram
     participant M as MBD app
-    participant T as Transparent UART service
-    participant A as Servo application
-    participant P as PWM / servo
+    box Wireless MCU
+        participant T as Transparent UART
+        participant A as Servo command<br/>validation + mapping
+        participant P as PWM output<br/>50 Hz
+    end
     Note over M,T: Connected, Control Point notifications enabled
     M->>T: Slider Set: 90°
     T->>A: Vendor-command event, full received frame
