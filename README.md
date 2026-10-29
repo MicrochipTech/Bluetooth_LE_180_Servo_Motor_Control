@@ -229,7 +229,7 @@ From the Zephyr checkout directory:
 
 ```bash
 cd ~/zephyrproject/zephyr
-west build -p always -b pic32wm_bz6204_curiosity/pic32cx2051bz62132 samples/Bluetooth_LE_180_Servo_Motor_Control
+west build -p always -b pic32wm_bz6204_curiosity samples/Bluetooth_LE_180_Servo_Motor_Control
 ```
 
 The build output is generated under `build/`. No precompiled image is required
