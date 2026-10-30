@@ -1,10 +1,10 @@
 <div align="center">
 
-<h1>Bluetooth LE 180° Servo Motor Control</h1>
+<h1>Bluetooth® LE 180° Servo Motor Control</h1>
 
-<p><strong>Wireless position control. Powered by Zephyr.</strong></p>
+<p><strong>Wireless position control. Powered by Zephyr®.</strong></p>
 
-<p>Wireless MCU &nbsp; | &nbsp; Bluetooth LE &nbsp; | &nbsp; 50 Hz PWM &nbsp; | &nbsp; 0–180°</p>
+<p>Wireless MCU &nbsp; | &nbsp; Bluetooth LE &nbsp; | &nbsp; 0–180°</p>
 
 <p><a href="#31-prerequisites">Set up Zephyr</a> · <a href="#32-import-the-application">Import</a> · <a href="#34-build-the-application">Build</a> · <a href="#35-program-the-board">Flash</a> · <a href="#5-demo-setup-and-operation">Run with MBD</a></p>
 
@@ -23,7 +23,7 @@
    - [File structure](#36-file-structure)
 4. [Application Architecture and Control Principles](#4-application-architecture-and-control-principles)
    - [Control architecture](#41-control-architecture)
-   - [BLE data flow and commands](#42-ble-data-flow-and-commands)
+   - [Bluetooth LE data flow and commands](#42-bluetooth-le-data-flow-and-commands)
    - [PWM and motor control](#43-pwm-and-motor-control)
 5. [Demo Setup and Operation](#5-demo-setup-and-operation)
 6. [Validation and Troubleshooting](#6-validation-and-troubleshooting)
@@ -32,7 +32,7 @@
 ## 1. Introduction
 
 Move a compatible **180° positional servo** wirelessly from the Microchip
-Bluetooth Data (MBD) app. The board translates a BLE position command into a
+Bluetooth Data (MBD) app. The board translates a Bluetooth LE position command into a
 hardware-generated PWM pulse. Change the position continuously with a slider or
 select the fixed **0°, 90°, and 180°** commands.
 
@@ -134,7 +134,7 @@ installation steps.
 
 - [Microchip Workbench for Zephyr guide](https://github.com/Zephyr4Microchip/zephyr-wireless/blob/main/docs/Workbench_for_Zephyr.md) — setup, CMSIS-DAP switching, import, build, and flash.
 - [Transparent UART sample](https://github.com/Zephyr4Microchip/zephyr/tree/bb83b6cd729c963eb5fee17caa26ef33aba5332a/samples/bluetooth/peripheral_trp_uart) — application baseline.
-- [Transparent UART service and server](https://github.com/Zephyr4Microchip/zephyr/tree/bb83b6cd729c963eb5fee17caa26ef33aba5332a/subsys/bluetooth/services/trs) — BLE implementation.
+- [Transparent UART service and server](https://github.com/Zephyr4Microchip/zephyr/tree/bb83b6cd729c963eb5fee17caa26ef33aba5332a/subsys/bluetooth/services/trs) — Bluetooth LE implementation.
 - [Zephyr PWM API](https://docs.zephyrproject.org/4.2.0/hardware/peripherals/pwm.html) — pulse-generation API used by the servo application.
 - [Microchip Transparent UART testing guide](https://onlinedocs.microchip.com/oxy/GUID-A5330D3A-9F51-4A26-B71D-8503A493DF9C-en-US-11/GUID-07EC83B7-CC28-4C55-8634-4B7F56A9DB36.html) — transport testing reference.
 
@@ -189,7 +189,7 @@ for workspace and shell setup.
 This application builds on **Transparent UART** available
 through [Zephyr Wireless](https://github.com/Zephyr4Microchip/zephyr-wireless),
 using the [Transparent UART sample](https://github.com/Zephyr4Microchip/zephyr/tree/bb83b6cd729c963eb5fee17caa26ef33aba5332a/samples/bluetooth/peripheral_trp_uart).
-It uses the Transparent UART service/server for BLE communication and adds the
+It uses the Transparent UART service/server for Bluetooth LE communication and adds the
 **180° servo command interface and PWM position control**.
 
 Zephyr uses Kconfig for features, devicetree for routing, and its PWM API for
@@ -197,17 +197,17 @@ pulse updates.
 
 | Layer | Configuration / source | Role |
 | :-- | :-- | :-- |
-| BLE + Transparent UART | [prj.conf](prj.conf) | Enables the Bluetooth peripheral, Transparent UART service/server, dynamic GATT, and buffers |
+| Bluetooth LE + Transparent UART | [prj.conf](prj.conf) | Enables the Bluetooth LE peripheral, Transparent UART service/server, dynamic GATT, and buffers |
 | Servo type | [Kconfig](Kconfig) | Selects the 180° application |
 | PWM route | [BZ6 board overlay](boards/pic32wm_bz6204_curiosity.overlay) | `pwm-servo` alias, TCC1 channel 1, PC11, 20,000,000 ns period |
 | Command integration | [main.c](src/main.c) | Advertising, Transparent UART event dispatch and serial bridge, and servo command forwarding |
 | Position-to-pulse mapping | [Servo implementation](src/app_servo_motor_180.c) | Range validation, ACKs/responses, and `pwm_set_dt()` |
 | Command definitions | [Servo header](src/app_servo_motor_180.h) | Opcodes, request/response IDs, and preset values |
 
-The configuration enables the Bluetooth peripheral, Transparent UART
+The configuration enables the Bluetooth LE peripheral, Transparent UART
 service/server, dynamic GATT database, GPIO, and PWM.
 
-BLE is configured for one connection, a target ATT MTU of 247, and
+Bluetooth LE is configured for one connection, a target ATT MTU of 247, and
 16 Transparent UART receive buffers of 244 bytes. The actual MTU is negotiated
 with the phone.
 Persistent bond storage is not enabled.
@@ -279,7 +279,7 @@ Bluetooth_LE_180_Servo_Motor_Control/
 
 | At a glance | Application behavior |
 | :-- | :-- |
-| BLE advertising name | `Zephyr_Servo-180` |
+| Bluetooth LE advertising name | `Zephyr_Servo-180` |
 | Servo UI name / type | `SERVO 180` / `0x00` |
 | Position range | Integer commands from **0 to 180** |
 | Startup command | **90°**, using a 1.5 ms pulse |
@@ -296,7 +296,7 @@ flowchart LR
         B["Transparent UART"] <--> C["Servo command<br/>validation + mapping"]
         C --> D["PWM output<br/>50 Hz"]
     end
-    A <-->|"BLE command / ACK + state"| B
+    A <-->|"Bluetooth LE command / ACK + state"| B
     D -->|"PWM pin"| E["180° positional<br/>servo"]
     style A fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
     style B fill:#eef2ff,stroke:#6366f1,color:#312e81
@@ -308,7 +308,7 @@ flowchart LR
 Diagrams show generic functional connections. The hardware table and overlay
 define the actual BZ6 pin mapping; no other board is currently supported.
 
-### 4.2 BLE data flow and commands
+### 4.2 Bluetooth LE data flow and commands
 
 #### From a slider action to the PWM pin
 
@@ -359,7 +359,7 @@ Discover characteristics by UUID rather than relying on fixed ATT handles.
 
 #### Servo packet format
 
-All examples below are **hexadecimal bytes on the BLE Control Point**:
+All examples below are **hexadecimal bytes on the Bluetooth LE Control Point**:
 
 ```text
  Byte 0       Byte 1             Byte 2        Bytes 3...
@@ -413,7 +413,7 @@ necessarily update it.
 | UART hex line starting with `8E` | Decoded and sent to the phone through CP; not executed locally as a servo command |
 | UART line limit | 128 characters; four completed lines can be queued |
 | Oversize line / queue overflow | Line discarded or dropped with a log message |
-| UART-to-BLE payload size | Up to `ATT MTU - 4`: 19 bytes at MTU 23; 243 bytes at MTU 247 |
+| UART-to-Bluetooth LE payload size | Up to `ATT MTU - 4`: 19 bytes at MTU 23; 243 bytes at MTU 247 |
 | Temporary TX backpressure | Pending UART data retried; TX-open and CBFC-credit events restart the pump |
 
 ### 4.3 PWM and motor control
@@ -465,14 +465,14 @@ https://github.com/user-attachments/assets/b8110a87-105f-4725-b334-e7c6fc5fdc61
 | Step | Action in the setup / MBD app | Expected firmware behavior |
 | :--: | :-- | :-- |
 | 1 | Power and reset the programmed board | Servo receives the 90° / 1.5 ms startup command |
-| 2 | Open MBD, scan, and connect to **`Zephyr_Servo-180`** | Board establishes one BLE connection |
+| 2 | Open MBD, scan, and connect to **`Zephyr_Servo-180`** | Board establishes one Bluetooth LE connection |
 | 3 | Open the servo controls in a compatible MBD version | UI-update exchange identifies `SERVO 180`, type `0x00`, and current software state |
 | 4 | Ensure Control Point notifications are enabled; a compatible app may manage this automatically | ACKs and servo responses can reach the phone |
 | 5 | Adjust the position slider within **0–180** | Firmware maps the angle to a 0.5–2.5 ms pulse |
 | 6 | Select **0°, 90°, or 180°** | Firmware updates position and returns state information |
 | 7 | Observe the servo and compare with serial logs if needed | Commanded position and pulse width are logged |
 
-For a manual BLE client, enable Control Point notifications **before** sending
+For a manual Bluetooth LE client, enable Control Point notifications **before** sending
 commands. Use hexadecimal byte writes, not ASCII text. The UI-update request is
 `8E 01 A1`; a 90° slider request is `8E 03 A2 00 5A`.
 
@@ -494,7 +494,7 @@ or boundary case below has been tested.
 | Slider 0 / 90 / 180 | 0.5 / 1.5 / 2.5 ms pulse commands |
 | Three presets | Correct request, ACK, response, and linked UI notification |
 | Reconnect | Device can be rediscovered and commands resume |
-| UART / BLE traffic | Correct direction, no unintended servo execution from RX data |
+| UART / Bluetooth LE traffic | Correct direction, no unintended servo execution from RX data |
 | Extended tests | Verify MTU limits, notification toggles, CBFC replenishment, and burst traffic |
 
 | Symptom | Check |
@@ -509,5 +509,5 @@ or boundary case below has been tested.
 
 > ⚠️ **Warning**
 >
-> Disconnecting BLE does not disable PWM or recenter the servo. The last pulse
+> Disconnecting Bluetooth LE does not disable PWM or recenter the servo. The last pulse
 > command remains active. Do not treat radio disconnection as a hardware stop.
